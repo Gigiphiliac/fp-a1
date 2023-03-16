@@ -1,28 +1,31 @@
-import java.text.ParseException;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MyTimetable {
 
     Scanner sc = new Scanner(System.in);
 
+    List<Course> coursesArray = new ArrayList<>();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
+
     public static void main(String[] args) {
         MyTimetable myTimetable = new MyTimetable();
-        System.out.println("Welcome to MyTimetable!");
-        System.out.println(myTimetable.getMenuChoice());
-    }
 
-    private String getMenuChoice() {
-        return getString("""
-                
-                --------------------------------------------------------------------------------
-                > Select from main menu
-                --------------------------------------------------------------------------------
-                   1) Search by keyword to enrol
-                   2) Show my enrolled courses
-                   3) Withdraw from a course
-                   4) Exit
-                Please select:\s""");
+        String FILENAME = "course.csv";
+
+        try {
+            myTimetable.readFromFile(FILENAME);
+            System.out.println("\nWelcome to MyTimetable!");
+            myTimetable.displayMenu();
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e);
+        }
+
     }
 
 
@@ -30,7 +33,7 @@ public class MyTimetable {
 
         String choice = getMenuChoice();
 
-        while(!choice.equals("4")) {
+        while (!choice.equals("4")) {
             switch (choice) {
                 case "1" -> enrol();
                 case "2" -> showEnrolments();
@@ -43,38 +46,85 @@ public class MyTimetable {
     }
 
 
+    private String getMenuChoice() {
+        return getString("""
+                --------------------------------------------------------------------------------
+                > Select from main menu
+                --------------------------------------------------------------------------------
+                   1) Search by keyword to enrol
+                   2) Show my enrolled courses
+                   3) Withdraw from a course
+                   4) Exit
+                Please select:\s""");
+    }
+
+//    private String getCourseChoice() {
+//        int i=0;
+//        System.out.println("""
+//                --------------------------------------------------------------------------------
+//                > Select from main menu
+//                --------------------------------------------------------------------------------""");
+//        for (Course c : coursesArray) {
+//            System.out.println(i + ") " + c.getName());
+//        }
+//        return getString("Please select: ");
+//    }
+
     private void enrol() {
+        String keyword = getString("Enter a keyword to search: ");
+
+        if (searchForMatch(keyword)) {
+            System.out.println("Match");
+        } else {
+            System.out.println("No match");
+        }
     }
 
 
     private void showEnrolments() {
+
     }
 
 
     private void withdraw() {
+
     }
 
 
-    private void readCoursesFromFile(String filename) {
-        String name, year, delivery, ltlDay;
-        int capacity;
-        LocalTime ltlTime;
-        double duration;
+    private void readFromFile(String filename) throws FileNotFoundException {
+        Scanner fileData = new Scanner(new FileReader(filename));
 
-        // open and read file contents line by line
-        // save each line of content as a new Course object
+        fileData.nextLine();  // skips the headings
 
-        value = line;
-        name = value[0];
-        capacity = value[1];
-        year = value[2];
-        delivery = value[3];
-        ltlDay = value[4];
-        ltlTime = value[5];
-        duration = value[6];
+        while (fileData.hasNextLine()) {
+            String line = fileData.nextLine();
 
-        Course course = new Course(name, capacity, year, delivery,
-                ltlDay, ltlTime, duration);
+            String[] values = line.split(",");
+
+            // error handling probably required here...
+            String name = values[0];
+            int capacity = Integer.parseInt(values[1]);
+            String year = values[2];
+            String delivery = values[3];
+            String ltlDay = values[4];
+            LocalTime ltlTime = LocalTime.parse(values[5], formatter);
+            double duration = Double.parseDouble(values[6]);
+
+            Course course = new Course(name, capacity, year,
+                    delivery, ltlDay, ltlTime, duration);
+
+            coursesArray.add(course);
+        }
+    }
+
+
+    private boolean searchForMatch(String keyword) {
+        for (Course c : coursesArray) {
+            if (c.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
