@@ -1,37 +1,18 @@
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class MyTimetable {
 
-    Scanner sc = new Scanner(System.in);
-
-    List<Course> coursesArray = new ArrayList<>();
+    Toolbox tb = new Toolbox();
+    static List<Course> coursesArray = new ArrayList<>();
     List<Course> coursesEnrolled = new ArrayList<>();
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
 
-    public static void main(String[] args) {
-        MyTimetable myTimetable = new MyTimetable();
-
-        String FILENAME = "course.csv";
-
-        try {
-            myTimetable.readFromFile(FILENAME);
-            System.out.println("\nWelcome to MyTimetable!");
-            myTimetable.displayMenu();
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e);
-        }
-
-    }
-
-
-    private void displayMenu() {
+    void displayMenu() {
 
         String choice = getMenuChoice();
 
@@ -49,7 +30,7 @@ public class MyTimetable {
 
 
     private String getMenuChoice() {
-        return getString("""
+        return tb.getString("""
                 --------------------------------------------------------------------------------
                 > Select from main menu
                 --------------------------------------------------------------------------------
@@ -62,7 +43,7 @@ public class MyTimetable {
 
 
     private void enrol() {
-        String keyword = getString("Enter a keyword to search: ");
+        String keyword = tb.getString("Enter a keyword to search: ");
 
         if (checkMatch(keyword)) {
             outputMatches(keyword);
@@ -98,13 +79,14 @@ public class MyTimetable {
 
         int response;
         Course selectedCourse;
+
         do {
             response = getCourseChoice(matches);
         } while (response<1||response>matches.size()+1);
 
         try {
             selectedCourse = matches.get(response-1);
-            if (!checkDuplicates(coursesEnrolled, selectedCourse)) {
+            if (!tb.checkDuplicates(coursesEnrolled, selectedCourse)) {
                 System.out.println("You have enrolled in the course '" + selectedCourse.getName() + "'!");
                 coursesEnrolled.add(selectedCourse);
             } else {
@@ -116,16 +98,6 @@ public class MyTimetable {
     }
 
 
-    private <T> boolean checkDuplicates(List<T> array, T element) {
-        for (T t : array) {
-            if (t.equals(element)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     private int getCourseChoice(List<Course> array) {
         int i=1;
         for (Course c : array) {
@@ -134,7 +106,7 @@ public class MyTimetable {
         }
         System.out.println(i+") Return to menu");
 
-        return getInteger("Please select: ");
+        return tb.getInteger("Please select: ");
     }
 
 
@@ -148,28 +120,13 @@ public class MyTimetable {
                     --------------------------------------------------------------------------------""");
 
             for (Course c : coursesEnrolled) {
-
-                String day = c.getLtlDay().substring(0,3);
-                LocalTime timeStart = c.getLtlTime();
-                LocalTime timeEnd = addDoubleToTime(timeStart, c.getDuration());
-
-                String dayAndTime = String.format("%s %s-%s", day, timeStart, timeEnd);
-
-                System.out.printf("%d) %-30s%-15s%-18s\n", i, c.getName(), c.getDelivery(), dayAndTime);
+                tb.formatCourseDetails(c, i);
                 i++;
             }
 
         } else {
             System.out.println("You are not enrolled in any classes.");
         }
-    }
-
-
-    private LocalTime addDoubleToTime(LocalTime time, double value) {
-        int hours = (int) value;
-        int minutes = (int) ((value - hours) * 60);
-
-        return time.plusHours(hours).plusMinutes(minutes);
     }
 
 
@@ -201,22 +158,16 @@ public class MyTimetable {
     private int getWithdrawalChoice(List<Course> array) {
         int i=1;
         for (Course c : array) {
-            String day = c.getLtlDay().substring(0,3);
-            LocalTime timeStart = c.getLtlTime();
-            LocalTime timeEnd = addDoubleToTime(timeStart, c.getDuration());
-
-            String dayAndTime = String.format("%s %s-%s", day, timeStart, timeEnd);
-
-            System.out.printf("%d) %-30s%-15s%-18s\n", i, c.getName(), c.getDelivery(), dayAndTime);
+            tb.formatCourseDetails(c, i);
             i++;
         }
         System.out.println(i+") Return to menu");
 
-        return getInteger("Please select: ");
+        return tb.getInteger("Please select: ");
     }
 
 
-    private void readFromFile(String filename) throws FileNotFoundException {
+    void readFromFile(String filename) throws FileNotFoundException {
         Scanner fileData = new Scanner(new FileReader(filename));
 
         fileData.nextLine();  // skips the headings
@@ -232,7 +183,7 @@ public class MyTimetable {
             String year = values[2];
             String delivery = values[3];
             String ltlDay = values[4];
-            LocalTime ltlTime = LocalTime.parse(values[5], formatter);
+            LocalTime ltlTime = LocalTime.parse(values[5], tb.formatter);
             double duration = Double.parseDouble(values[6]);
 
             Course course = new Course(name, capacity, year,
@@ -242,37 +193,4 @@ public class MyTimetable {
         }
     }
 
-
-    public String getString(String prompt) {
-        String value;  // stores user input
-
-        // as long as user input isn't an empty String, do-while repeats
-        do {
-            System.out.print(prompt);
-            value = sc.nextLine();
-        } while (value.equals(""));
-
-        return value;  // return the expected value
-    }
-
-
-    public int getInteger(String prompt) {
-        int value = 0;  // initialises user input variable to 0
-        boolean proceed = true;  // keeps do-while running while true
-
-        // as long as user input is not an integer, do-while will repeat
-        do {
-            System.out.print(prompt);
-            // try parsing input as Integer, and catches any failure to do so
-            try {
-                value = Integer.parseInt(sc.nextLine());
-                proceed = false;  // desired value obtained, allow loop to end
-            } catch (NumberFormatException e) {  // non-int inputted
-                // change prompt to provide direction to user
-                prompt = "Invalid input! You must enter an integer value: ";
-            }
-        } while (proceed);
-
-        return value;  // return the expected value
-    }
 }
