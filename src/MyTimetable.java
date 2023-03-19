@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class MyTimetable {
 
     Toolbox tb = new Toolbox();
-    static List<Course> coursesArray = new ArrayList<>();
+    List<Course> coursesArray = new ArrayList<>();
     List<Course> coursesEnrolled = new ArrayList<>();
 
 
