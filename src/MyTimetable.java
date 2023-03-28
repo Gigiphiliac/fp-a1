@@ -13,23 +13,27 @@ public class MyTimetable {
 
 
     void displayMenu() {
-
+        // store the user's menu choice
         String choice = getMenuChoice();
 
+        // until the user selects '4' (the exit option), the program will
+        // remain in this loop. (completing any function will return to menu)
         while (!choice.equals("4")) {
             switch (choice) {
                 case "1" -> enrol();
                 case "2" -> showEnrolments();
                 case "3" -> withdraw();
-                default -> System.out.println("Please select a valid menu option.");
+                default -> System.out.println("Please select a valid "
+                        + "menu option.");
             }
-            choice = getMenuChoice();
+            choice = getMenuChoice();  // get next menu choice
         }
         System.out.println("Quitting...");
     }
 
 
     private String getMenuChoice() {
+        // return the user input according to displayed menu
         return tb.getString("""
                 --------------------------------------------------------------------------------
                 > Select from main menu
@@ -43,28 +47,36 @@ public class MyTimetable {
 
 
     private void enrol() {
+        // get a keyword from the user
         String keyword = tb.getString("Enter a keyword to search: ");
 
+        // if a keyword match is found, output all the keyword matches before
+        // allowing the user to select from the matches
         if (checkMatch(keyword)) {
             outputMatches(keyword);
-        } else {
-            System.out.println("No courses were found matching that keyword...");
+        } else {  // no initial match found
+            System.out.println("No courses were found matching that "
+                    + "keyword...");
         }
     }
 
 
     private boolean checkMatch(String keyword) {
+        // iterate through coursesArray and return true if any element's
+        // name matches 'keyword'
         for (Course c : coursesArray) {
             if (c.getName().toLowerCase().contains(keyword.toLowerCase())) {
                 return true;
             }
         }
-        return false;
+        return false;  // no match found
     }
 
 
     private void outputMatches(String keyword) {
 
+        // iterate through coursesArray and add any courses with a name
+        // matching 'keyword' to the ArrayList 'matches'
         List<Course> matches = new ArrayList<>();
         for (Course c : coursesArray) {
             if (c.getName().toLowerCase().contains(keyword.toLowerCase())) {
@@ -80,38 +92,61 @@ public class MyTimetable {
         int response;
         Course selectedCourse;
 
-        do {
-            response = getCourseChoice(matches);
-        } while (response<1||response>matches.size()+1);
-
         try {
-            selectedCourse = matches.get(response-1);
-            if (!tb.checkDuplicates(coursesEnrolled, selectedCourse)) {
-                System.out.println("You have enrolled in the course '" + selectedCourse.getName() + "'!");
-                coursesEnrolled.add(selectedCourse);
-            } else {
-                System.out.println("You are already enrolled in the course '" + selectedCourse.getName() + "'.");
+            // get course index as int
+            response = getCourseChoice(matches);
+
+            // throw a ReturnToMenuException if the user chose to exit
+            // to menu (1 higher than last array element)
+            if (response==(matches.size()+1)) {
+                throw new ReturnToMenuException("Returning to menu...");
             }
 
-        } catch (IndexOutOfBoundsException ignored) {}
+            // retrieve the course according to 'response'
+            selectedCourse = matches.get(response-1);
+            // add course to 'coursesEnrolled' if it isn't already in there
+            if (!tb.checkDuplicates(coursesEnrolled, selectedCourse)) {
+                System.out.println("You have enrolled in the course '"
+                        + selectedCourse.getName() + "'!");
+                coursesEnrolled.add(selectedCourse);
+            } else {  // the course was already in 'coursesEnrolled'
+                System.out.println("You are already enrolled in the course '"
+                        + selectedCourse.getName() + "'.");
+            }
 
+        // return to menu and output message to console
+        } catch (ReturnToMenuException e) {
+            System.out.println(e.getMessage());
+
+        // call this function recursively if the user input was not
+        // a valid menu option
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Please select a valid option.");
+            outputMatches(keyword);
+        }
     }
 
 
     private int getCourseChoice(List<Course> array) {
+        // start the counter at 1 because it is presented to users
         int i=1;
+
+        // iterate through 'array' and output the name of each course
         for (Course c : array) {
             System.out.println(i+") "+c.getName());
             i++;
         }
+        // last option is 'return to menu'
         System.out.println(i+") Return to menu");
 
+        // return the user input as an integer
         return tb.getInteger("Please select: ");
     }
 
 
     private void showEnrolments() {
         if (!coursesEnrolled.isEmpty()) {
+            // start the counter at 1 because it is presented to users
             int i=1;
 
             System.out.println("""
@@ -119,18 +154,20 @@ public class MyTimetable {
                     You have enrolled into the following course(s):
                     --------------------------------------------------------------------------------""");
 
+            // format each course in 'array'
             for (Course c : coursesEnrolled) {
-                tb.formatCourseDetails(c, i);
+                tb.formatCourseDetails(c, i);  // pass Course and index to format
                 i++;
             }
 
-        } else {
+        } else {  // coursesEnrolled is empty
             System.out.println("You are not enrolled in any classes.");
         }
     }
 
 
     private void withdraw() {
+        // continue if the user is enrolled in at least one course
         if (!coursesEnrolled.isEmpty()) {
 
             System.out.println("""
@@ -140,57 +177,104 @@ public class MyTimetable {
 
             int response;
             Course selectedCourse;
-            do {
-                response = getWithdrawalChoice(coursesEnrolled);
-            } while (response<1||response>coursesEnrolled.size()+1);
 
             try {
-                selectedCourse = coursesEnrolled.get(response-1);
-                System.out.println("You have withdrawn from '" + selectedCourse.getName() + "'!");
+                // get course index as int
+                response = getWithdrawalChoice(coursesEnrolled);
+
+                // throw a ReturnToMenuException if the user chose to exit
+                // to menu (1 higher than last array element)
+                if (response==(coursesEnrolled.size()+1)) {
+                    throw new ReturnToMenuException("Returning to menu...");
+                }
+
+                // retrieve the course according to 'response' and remove
+                // it from coursesEnrolled
+                selectedCourse = coursesEnrolled.get(response - 1);
+                System.out.println("You have withdrawn from '"
+                        + selectedCourse.getName() + "'!");
                 coursesEnrolled.remove(selectedCourse);
-            } catch (IndexOutOfBoundsException ignored) {}
-        } else {
-            System.out.println("You must be enrolled in at least one class to withdraw.");
+
+            // return to menu and output message to console
+            } catch (ReturnToMenuException e) {
+                System.out.println(e.getMessage());
+
+            // call this function recursively if the user input was not
+            // a valid menu option
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Please select a valid option.");
+                withdraw();
+            }
+
+        } else {  // if coursesEnrolled is empty
+            System.out.println("You must be enrolled in at least one class "
+                    + "to withdraw.");
         }
     }
 
 
     private int getWithdrawalChoice(List<Course> array) {
+        // start the counter at 1 because it is presented to users
         int i=1;
+
+        // format each course in 'array'
         for (Course c : array) {
-            tb.formatCourseDetails(c, i);
+            tb.formatCourseDetails(c, i);  // pass Course and index to format
             i++;
         }
+        // last option is 'return to menu'
         System.out.println(i+") Return to menu");
 
+        // return the user input as an integer
         return tb.getInteger("Please select: ");
     }
 
 
     void readFromFile(String filename) throws FileNotFoundException {
-        Scanner fileData = new Scanner(new FileReader(filename));
 
-        fileData.nextLine();  // skips the headings
+        try {
+            // create a Scanner object around the file inputted
+            Scanner fileData = new Scanner(new FileReader(filename));
 
-        while (fileData.hasNextLine()) {
-            String line = fileData.nextLine();
+            fileData.nextLine();  // skips the headings
 
-            String[] values = line.split(",");
+            // loop through the file until there are no more lines to read
+            while (fileData.hasNextLine()) {
+                // take current line and split into an array of values
+                String line = fileData.nextLine();
+                String[] values = line.split(",");
 
-            // error handling probably required here...
-            String name = values[0];
-            int capacity = Integer.parseInt(values[1]);
-            String year = values[2];
-            String delivery = values[3];
-            String ltlDay = values[4];
-            LocalTime ltlTime = LocalTime.parse(values[5], tb.formatter);
-            double duration = Double.parseDouble(values[6]);
+                // assign each value to their respective variable
+                String name = values[0];
+                int capacity = Integer.parseInt(values[1]);
+                String year = values[2];
+                String delivery = values[3];
+                String ltlDay = values[4];
+                LocalTime ltlTime = LocalTime.parse(values[5], tb.formatter);
+                double duration = Double.parseDouble(values[6]);
 
-            Course course = new Course(name, capacity, year,
-                    delivery, ltlDay, ltlTime, duration);
+                // create a new Course object and add to the coursesArray ArrayList
+                Course course = new Course(name, capacity, year,
+                        delivery, ltlDay, ltlTime, duration);
+                coursesArray.add(course);
+            }
 
-            coursesArray.add(course);
+        // catches FileNotFoundExceptions and its children
+        } catch (FileNotFoundException e) {
+            // throws InvalidFileNameException if the filename is not
+            // a valid CSV file
+            if (!tb.isValidCSVFile(filename)) {
+                throw new InvalidFileNameException("'" + filename
+                        + "' is an invalid .csv filename");
+
+            // throws a FileNotFoundException for any unaccounted for
+            // file exception cases
+            } else {
+                throw new FileNotFoundException("'" + filename
+                        + "' could not be found");
+            }
         }
+
     }
 
 }

@@ -1,8 +1,11 @@
 import java.time.LocalTime;
 
 public class Course {
-    private String name, year, delivery, ltlDay;
+    private String name;
     private int capacity;
+    private String year;
+    private String delivery;
+    private String ltlDay;
     private LocalTime ltlTime;
     private double duration;
 

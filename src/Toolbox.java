@@ -2,6 +2,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class Toolbox {
 
@@ -10,42 +11,69 @@ public class Toolbox {
 
 
     void formatCourseDetails(Course c, int i) {
-        String day = c.getLtlDay().substring(0,3);
-        LocalTime timeStart = c.getLtlTime();
-        LocalTime timeEnd = addDoubleToTime(timeStart, c.getDuration());
+        String day, dayAndTime;
+        LocalTime timeStart, timeEnd;
 
-        String dayAndTime = String.format("%s %s-%s", day, timeStart, timeEnd);
+        // retrieve the course day and time details in required format
+        day = c.getLtlDay().substring(0,3);
+        timeStart = c.getLtlTime();
+        timeEnd = addDoubleToTime(timeStart, c.getDuration());
 
-        System.out.printf("%d) %-30s%-15s%-18s\n", i, c.getName(), c.getDelivery(), dayAndTime);
+        // format day and time details
+        dayAndTime = String.format("%s %s-%s", day, timeStart, timeEnd);
+
+        // print the formatted line
+        System.out.printf("%d) %-30s%-15s%-18s\n",
+                i, c.getName(), c.getDelivery(), dayAndTime);
     }
 
 
     LocalTime addDoubleToTime(LocalTime time, double value) {
+        // convert 'value' from boolean into int representations
+        // of hours and minutes
         int hours = (int) value;
         int minutes = (int) ((value - hours) * 60);
 
+        // return the LocalTime value after hours and minutes have been added
         return time.plusHours(hours).plusMinutes(minutes);
     }
 
 
     <T> boolean checkDuplicates(List<T> array, T element) {
+        // iterate through passed 'array' and return true if passed 'element'
+        // matches any element within 'array'
         for (T t : array) {
             if (t.equals(element)) {
                 return true;
             }
         }
-        return false;
+        return false;  // no matches found
+    }
+
+
+    boolean isValidCSVFile(String filename) {
+        // return true if the filename matches the regex pattern '[text].csv'
+        Pattern pattern = Pattern.compile("^.+\\.csv$");
+        return pattern.matcher(filename).matches();
     }
 
 
     String getString(String prompt) {
         String value;  // stores user input
 
-        // as long as user input isn't an empty String, do-while repeats
-        do {
+        try {
             System.out.print(prompt);
+            // take value from user input and throw exception if empty
             value = sc.nextLine();
-        } while (value.equals(""));
+            if (value.equals("")) {
+                throw new EmptyInputException("Invalid input! You must enter "
+                        + "a value: ");
+            }
+        // if an empty input is caught, recursively call this method with
+        // error message as the text prompt
+        } catch (EmptyInputException e) {
+            value = getString(e.getMessage());
+        }
 
         return value;  // return the expected value
     }
