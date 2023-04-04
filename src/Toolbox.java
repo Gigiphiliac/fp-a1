@@ -10,7 +10,7 @@ public class Toolbox {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
 
 
-    void formatCourseDetails(Course c, int i) {
+    String formatCourseDetails(Course c, int i) {
         String day, dayAndTime;
         LocalTime timeStart, timeEnd;
 
@@ -22,8 +22,8 @@ public class Toolbox {
         // format day and time details
         dayAndTime = String.format("%s %s-%s", day, timeStart, timeEnd);
 
-        // print the formatted line
-        System.out.printf("%d) %-30s%-15s%-18s\n",
+        // return the formatted line
+        return String.format("%d) %-30s%-15s%-18s\n",
                 i, c.getName(), c.getDelivery(), dayAndTime);
     }
 
@@ -48,6 +48,18 @@ public class Toolbox {
             }
         }
         return false;  // no matches found
+    }
+
+
+     boolean checkMatch(List<Course> array, String keyword) {
+        // iterate through passed 'array' and return true if any element's
+        // name matches 'keyword'
+        for (Course c : array) {
+            if (c.getName().toLowerCase().contains(keyword.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;  // no match found
     }
 
 

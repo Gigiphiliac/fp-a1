@@ -1,3 +1,4 @@
+import javax.sound.midi.SysexMessage;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.time.LocalTime;
@@ -52,24 +53,12 @@ public class MyTimetable {
 
         // if a keyword match is found, output all the keyword matches before
         // allowing the user to select from the matches
-        if (checkMatch(keyword)) {
+        if (tb.checkMatch(coursesArray, keyword)) {
             outputMatches(keyword);
         } else {  // no initial match found
             System.out.println("No courses were found matching that "
                     + "keyword...");
         }
-    }
-
-
-    private boolean checkMatch(String keyword) {
-        // iterate through coursesArray and return true if any element's
-        // name matches 'keyword'
-        for (Course c : coursesArray) {
-            if (c.getName().toLowerCase().contains(keyword.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;  // no match found
     }
 
 
@@ -156,7 +145,8 @@ public class MyTimetable {
 
             // format each course in 'array'
             for (Course c : coursesEnrolled) {
-                tb.formatCourseDetails(c, i);  // pass Course and index to format
+                // pass Course and index to format and print
+                System.out.print(tb.formatCourseDetails(c, i));
                 i++;
             }
 
@@ -219,7 +209,8 @@ public class MyTimetable {
 
         // format each course in 'array'
         for (Course c : array) {
-            tb.formatCourseDetails(c, i);  // pass Course and index to format
+            // pass Course and index to format and print
+            System.out.print(tb.formatCourseDetails(c, i));
             i++;
         }
         // last option is 'return to menu'

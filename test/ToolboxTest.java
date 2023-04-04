@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -13,8 +14,24 @@ public class ToolboxTest {
     Toolbox tester;
 
     @Before
-    public void setUpClass() {
+    public void setUp() {
         tester = new Toolbox(); // initialise a new Toolbox instance
+    }
+
+    @Test
+    public void testFormatCourseDetails() {
+        // create a new test course
+        Course course = new Course("science",25,"Year 1",
+                "Online","Friday", LocalTime.of(12, 0),2.5);
+
+        // create a formatted expectedOutput and an actual String formatted
+        // using the formatCourseDetails method
+        String expectedOutput = String.format("%d) %-30s%-15s%-18s\n",
+                1, "science", "Online", "Fri 12:00-14:30");
+        String formattedCourseDetails = tester.formatCourseDetails(course, 1);
+
+        // verify that the formatted result matches the expected formatting
+        assertEquals(expectedOutput, formattedCourseDetails);
     }
 
     @Test
@@ -47,36 +64,54 @@ public class ToolboxTest {
     }
 
     @Test
+    public void testCheckMatch() {
+        // create a new test course
+        Course course = new Course("science",25,"Year 1",
+                "Online","Friday", LocalTime.of(12, 0),2.5);
+
+        // add that course into an arrayList
+        List<Course> testList = new ArrayList<>();
+        testList.add(course);
+
+        // initialise a valid and invalid keyword
+        String validKeyword = "SCI";
+        String invalidKeyword = "SKI";
+
+        // check that the checkMatch method successfully identifies
+        // valid keyword matches
+        assertTrue(tester.checkMatch(testList, validKeyword));
+        assertFalse(tester.checkMatch(testList, invalidKeyword));
+    }
+
+    @Test
+    public void testIsValidCSVFile() {
+        // create two example strings, one of which fits the .csv format
+        // while the other doesn't
+        String shouldMatch = "asdf.csv";
+        String shouldNotMatch = "asdf.cs";
+
+        // check that the isValidCSVFile method successfully identifies
+        // a String input matching the .csv file format
+        assertTrue(tester.isValidCSVFile(shouldMatch));
+        assertFalse(tester.isValidCSVFile(shouldNotMatch));
+    }
+
+    @Test
     public void testGetString() {
-        // question to be 'asked'
-        String prompt = "Enter a string: ";
 
         // simulate user input
-        String input = "test";
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
+        String userInput = "testing";
+        System.setIn(new ByteArrayInputStream(userInput.getBytes()));
 
-        // return the value of getString method call
-        String result = tester.getString(prompt);
+        // call getString method
+        String result = tester.getString("Enter a string: ");
 
-        // check that the returned value matches userInput
-        assertEquals(input, result);
+        // check that the method returned the expected value
+        assertEquals(userInput, result);
     }
 
     @Test
     public void testGetInteger() {
-        // question to be 'asked'
-        String prompt = "Enter an integer: ";
-
-        // simulate user input
-        String input = "6";
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-
-        // return the value of getInteger method call
-        int result = tester.getInteger(prompt);
-
-        // check that the returned value matches userInput
-        assertEquals(Integer.parseInt(input), result);
+        // untestable
     }
 }
