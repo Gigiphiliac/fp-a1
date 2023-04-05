@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 public class Toolbox {
 
-    Scanner sc = new Scanner(System.in);
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
 
 
@@ -71,6 +70,7 @@ public class Toolbox {
 
 
     String getString(String prompt) {
+        Scanner sc = new Scanner(System.in);  // initialise Scanner object
         String value;  // stores user input
 
         try {
@@ -92,6 +92,7 @@ public class Toolbox {
 
 
     int getInteger(String prompt) {
+        Scanner sc = new Scanner(System.in);  // initialise Scanner object
         int value = 0;  // initialises user input variable to 0
         boolean proceed = true;  // keeps do-while running while true
 

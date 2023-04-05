@@ -1,5 +1,6 @@
 import org.junit.*;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class ToolboxTest {
     }
 
     @Test
-    public void testFormatCourseDetails() {
+    public void testFormatCourseDetails_success() {
         // create a new test course
         Course course = new Course("science",25,"Year 1",
                 "Online","Friday", LocalTime.of(12, 0),2.5);
@@ -33,7 +34,22 @@ public class ToolboxTest {
     }
 
     @Test
-    public void testAddDoubleToTime() {
+    public void testFormatCourseDetails_failure() {
+        // create a new test course
+        Course course = new Course("science",25,"Year 1",
+                "Online","Friday", LocalTime.of(12, 0),2.5);
+
+        // create an incorrectly formatted output and an actual String formatted
+        // using the formatCourseDetails method
+        String incorrectOutput = "This isn't even a formatted String hehe";
+        String formattedCourseDetails = tester.formatCourseDetails(course, 1);
+
+        // verify that the formatted result fails to match the incorrect formatting
+        assertNotEquals(incorrectOutput, formattedCourseDetails);
+    }
+
+    @Test
+    public void testAddDoubleToTime_success() {
         // create a starting time of 6:30, an increment of 1.5 hours,
         // and the time expected to be returned of 8:00
         LocalTime startTime = LocalTime.of(6,30);
@@ -41,23 +57,51 @@ public class ToolboxTest {
         LocalTime expectedTime = LocalTime.of(8,0);
 
         // return the value of addDoubleToTime method call
-        LocalTime result = tester.addDoubleToTime(startTime,addedTime);
+        LocalTime result = tester.addDoubleToTime(startTime, addedTime);
 
         // check that the returned value matches expectedTime
         assertEquals(expectedTime, result);
     }
 
     @Test
-    public void testCheckDuplicates() {
+    public void testAddDoubleToTime_failure() {
+        // create a starting time of 12:00, an increment of 2.5 hours,
+        // and the time expected to be returned of 8:00
+        LocalTime startTime = LocalTime.of(12,0);
+        double addedTime = 2.5;
+
+        // create a LocalTime that should be incorrect
+        LocalTime incorrectTime = LocalTime.of(15,30);
+        // expected result is 14:30
+
+        // return the value of addDoubleToTime method call
+        LocalTime result = tester.addDoubleToTime(startTime, addedTime);
+
+        // check that the returned value matches expectedTime
+        assertNotEquals(incorrectTime, result);
+    }
+
+    @Test
+    public void testCheckDuplicates_success() {
         // create and add colours to an ArrayList
         List<String> testList = new ArrayList<>();
         testList.add("red");
         testList.add("green");
         testList.add("blue");
 
-        // check that the checkDuplicates method successfully identifies
-        // whether an element is already in a List
+        // validate that checkDuplicates successfully locates 'red' in the testList
         assertTrue(tester.checkDuplicates(testList, "red"));
+    }
+
+    @Test
+    public void testCheckDuplicates_failure() {
+        // create and add colours to an ArrayList
+        List<String> testList = new ArrayList<>();
+        testList.add("red");
+        testList.add("green");
+        testList.add("blue");
+
+        // validate that checkDuplicates fails to locate 'yellow' in the testList
         assertFalse(tester.checkDuplicates(testList, "yellow"));
     }
 
@@ -109,7 +153,34 @@ public class ToolboxTest {
     }
 
     @Test
-    public void testGetInteger() {
-        // untestable
+    public void testGetInteger_success() {
+
+        // simulate user input
+        String userInput = "2";
+        System.setIn(new ByteArrayInputStream(userInput.getBytes()));
+
+        // call getInteger method
+        int result = tester.getInteger("Enter an integer: ");
+
+        // check that the method returned the expected value
+        assertEquals(Integer.parseInt(userInput), result);
+    }
+
+    @Test
+    public void testGetInteger_failure() {
+
+        // simulate user input
+        String userInputFailure = "a";
+        String userInputSuccess = "2";
+        System.setIn(new ByteArrayInputStream(userInputFailure.getBytes()));
+        System.out.println(System.in);
+        System.setIn(new ByteArrayInputStream(userInputSuccess.getBytes()));
+        System.out.println(System.in);
+
+        // call getInteger method
+        int result = tester.getInteger("Enter an integer: ");
+
+        // check that the method returned the expected value
+        assertEquals(Integer.parseInt(userInputSuccess), result);
     }
 }
