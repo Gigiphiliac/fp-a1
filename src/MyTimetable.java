@@ -32,7 +32,7 @@ public class MyTimetable {
     }
 
 
-    private String getMenuChoice() {
+    String getMenuChoice() {
         // return the user input according to displayed menu
         return tb.getString("""
                 --------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ public class MyTimetable {
     }
 
 
-    private void enrol() {
+    void enrol() {
         // get a keyword from the user
         String keyword = tb.getString("Enter a keyword to search: ");
 
@@ -61,7 +61,7 @@ public class MyTimetable {
     }
 
 
-    private void outputMatches(String keyword) {
+    void outputMatches(String keyword) {
 
         // iterate through coursesArray and add any courses with a name
         // matching 'keyword' to the ArrayList 'matches'
@@ -115,7 +115,7 @@ public class MyTimetable {
     }
 
 
-    private int getCourseChoice(List<Course> array) {
+    int getCourseChoice(List<Course> array) {
         // start the counter at 1 because it is presented to users
         int i=1;
 
@@ -132,7 +132,7 @@ public class MyTimetable {
     }
 
 
-    private void showEnrolments() {
+    void showEnrolments() {
         if (!coursesEnrolled.isEmpty()) {
             // start the counter at 1 because it is presented to users
             int i=1;
@@ -155,7 +155,7 @@ public class MyTimetable {
     }
 
 
-    private void withdraw() {
+    void withdraw() {
         // continue if the user is enrolled in at least one course
         if (!coursesEnrolled.isEmpty()) {
 
@@ -202,7 +202,7 @@ public class MyTimetable {
     }
 
 
-    private int getWithdrawalChoice(List<Course> array) {
+    int getWithdrawalChoice(List<Course> array) {
         // start the counter at 1 because it is presented to users
         int i=1;
 
