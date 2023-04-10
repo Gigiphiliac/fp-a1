@@ -1,7 +1,6 @@
 import org.junit.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +17,37 @@ public class MyTimetableTest {
     }
 
     @Test
-    public void testDisplayMenu_1() {
-        // untestable
+    public void testDisplayMenu_Quit() {
+
+        String userInput = "4"; // the 'quit' menu option
+
+        // simulate user input and create a mock output stream
+        ByteArrayInputStream in = new ByteArrayInputStream(userInput.getBytes());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        System.setIn(in);
+        System.setOut(new PrintStream(out));
+
+        String expectedOutput = """
+                --------------------------------------------------------------------------------
+                > Select from main menu
+                --------------------------------------------------------------------------------
+                   1) Search by keyword to enrol
+                   2) Show my enrolled courses
+                   3) Withdraw from a course
+                   4) Exit
+                Please select: Quitting...
+                """;
+
+        // call the displayMenu method
+        tester.displayMenu();
+
+        // check that the method output the expected String
+        assertEquals(expectedOutput, out.toString());
     }
 
     @Test
-    public void testDisplayMenu_2() {
-        // untestable
+    public void testDisplayMenu_IncorrectInput() {
+        // cannot test due to the need to queue simulated user input
     }
 
     @Test
@@ -57,13 +80,29 @@ public class MyTimetableTest {
     }
 
     @Test
-    public void testEnrol_1() {
-        // untestable
+    public void testEnrol_NoMatchesFound() {
+
+        String invalidKeyword = "SKI"; // an invalid keyword
+
+        // simulate user input and create a mock output stream
+        InputStream in = new ByteArrayInputStream(invalidKeyword.getBytes());
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        System.setIn(in);
+        System.setOut(new PrintStream(out));
+
+        String expectedOutput = "Enter a keyword to search: No courses were "
+                + "found matching that keyword...\n";
+
+        // call the enrol method
+        tester.enrol();
+
+        // check that the method output the expected String
+        assertEquals(expectedOutput, out.toString());
     }
 
     @Test
-    public void testEnrol_2() {
-        // untestable
+    public void testEnrol_MatchesFound() {
+        // cannot test due to the need to queue simulated user input
     }
 
     @Test
@@ -162,13 +201,45 @@ public class MyTimetableTest {
     }
 
     @Test
-    public void testShowEnrolments_1() {
-        // untestable
+    public void testShowEnrolments_Enrolled() {
+        tester.coursesEnrolled.add(new Course("science",25,"Year 1",
+                "Online","Friday", LocalTime.of(12, 0),2.5));
+        tester.coursesEnrolled.add(new Course("geography",100,"Year 2",
+                "Face-to-face","Monday", LocalTime.of(8, 0),2));
+
+        // create a mock output stream to catch console output
+        ByteArrayOutputStream outputContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputContent));
+
+        String expectedOutput = """
+                --------------------------------------------------------------------------------
+                You have enrolled into the following course(s):
+                --------------------------------------------------------------------------------
+                1) science                       Online         Fri 12:00-14:30  \s
+                2) geography                     Face-to-face   Mon 08:00-10:00  \s
+                """;
+
+        // call the showEnrolments method with a populated 'coursesEnrolled'
+        tester.showEnrolments();
+
+        // assert that the console output matches the expected output
+        assertEquals(expectedOutput, outputContent.toString());
     }
 
     @Test
-    public void testShowEnrolments_2() {
-        // untestable
+    public void testShowEnrolments_NotEnrolled() {
+
+        // create a mock output stream to catch console output
+        ByteArrayOutputStream outputContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outputContent));
+
+        String expectedOutput = "You are not enrolled in any classes.\n";
+
+        // call showEnrolments method with an unpopulated 'coursesEnrolled'
+        tester.showEnrolments();
+
+        // assert that the console output matches the expected output
+        assertEquals(expectedOutput, outputContent.toString());
     }
 
     @Test

@@ -1,6 +1,5 @@
 import org.junit.*;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -106,7 +105,7 @@ public class ToolboxTest {
     }
 
     @Test
-    public void testCheckMatch() {
+    public void testCheckMatch_matchFound() {
         // create a new test course
         Course course = new Course("science",25,"Year 1",
                 "Online","Friday", LocalTime.of(12, 0),2.5);
@@ -115,31 +114,54 @@ public class ToolboxTest {
         List<Course> testList = new ArrayList<>();
         testList.add(course);
 
-        // initialise a valid and invalid keyword
+        // initialise a valid keyword
         String validKeyword = "SCI";
-        String invalidKeyword = "SKI";
 
         // check that the checkMatch method successfully identifies
         // valid keyword matches
         assertTrue(tester.checkMatch(testList, validKeyword));
+    }
+
+    @Test
+    public void testCheckMatch_matchNotFound() {
+        // create a new test course
+        Course course = new Course("science",25,"Year 1",
+                "Online","Friday", LocalTime.of(12, 0),2.5);
+
+        // add that course into an arrayList
+        List<Course> testList = new ArrayList<>();
+        testList.add(course);
+
+        // initialise an invalid keyword
+        String invalidKeyword = "SKI";
+
+        // check that the checkMatch method successfully identifies
+        // invalid keyword matches
         assertFalse(tester.checkMatch(testList, invalidKeyword));
     }
 
     @Test
-    public void testIsValidCSVFile() {
-        // create two example strings, one of which fits the .csv format
-        // while the other doesn't
+    public void testIsValidCSVFile_validMatch() {
+        // create an example string which matches the .csv format
         String shouldMatch = "asdf.csv";
-        String shouldNotMatch = "asdf.cs";
 
         // check that the isValidCSVFile method successfully identifies
         // a String input matching the .csv file format
         assertTrue(tester.isValidCSVFile(shouldMatch));
+    }
+
+    @Test
+    public void testIsValidCSVFile_invalidMatch() {
+        // create a string that does not match the .csv format
+        String shouldNotMatch = "asdf.cs";
+
+        // check that the isValidCSVFile method successfully identifies
+        // a String input not matching the .csv file format
         assertFalse(tester.isValidCSVFile(shouldNotMatch));
     }
 
     @Test
-    public void testGetString() {
+    public void testGetString_success() {
 
         // simulate user input
         String userInput = "testing";
@@ -150,6 +172,11 @@ public class ToolboxTest {
 
         // check that the method returned the expected value
         assertEquals(userInput, result);
+    }
+
+    @Test
+    public void testGetString_failure() {
+        // cannot test due to the need to queue simulated user input
     }
 
     @Test
@@ -168,19 +195,6 @@ public class ToolboxTest {
 
     @Test
     public void testGetInteger_failure() {
-
-        // simulate user input
-        String userInputFailure = "a";
-        String userInputSuccess = "2";
-        System.setIn(new ByteArrayInputStream(userInputFailure.getBytes()));
-        System.out.println(System.in);
-        System.setIn(new ByteArrayInputStream(userInputSuccess.getBytes()));
-        System.out.println(System.in);
-
-        // call getInteger method
-        int result = tester.getInteger("Enter an integer: ");
-
-        // check that the method returned the expected value
-        assertEquals(Integer.parseInt(userInputSuccess), result);
+        // cannot test due to the need to queue simulated user input
     }
 }
