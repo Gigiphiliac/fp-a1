@@ -9,24 +9,15 @@ This program provides the following functionalities:
  - Exit the program.
 
 
-To run the MyTimetable program from the command line, follow these steps:
- 1) Navigate to the folder where the 'fp-a1' folder has been downloaded
- 2) Copy the full directory path
- 3) Open cmd and type 'cd [copied dir path]'
- 4) Enter the folder by typing 'cd fp-a1'
- 5) Use these commands on separate consecutive lines. These will a) compile the program, b) run the compiled program
-  a) javac ./src/*.java
-  b) java -cp ./src Main
-
-
-To run the MyTimetable program's test classes, follow these steps:
+To run the MyTimetable program's Main and test classes, follow these steps:
  1) Navigate to the folder where the 'fp-a1' folder has been downloaded
  2) Copy the full directory path
  3) Open cmd and type 'cd [copied dir path]'
  4) Enter the folder by typing 'cd fp-a1'
  5) Locate your junit and hamcrest .jar files (could look like 'C:\Users\xxx\plugins\org.junit_4.13.2.v20211018-1956.jar' and 'C:\Users\xxx\plugins\org.hamcrest.core_1.3.0.v20180420-1519.jar')
- 6) Use these commands on separate consecutive lines. These will a) compile the test classes, b)-c) run the compiled test classes
+ 6) Use these commands on separate consecutive lines. These will a) compile the test classes, b) run the compiled program, c)-d) run the compiled test classes
   a) javac -cp [junit jar filepath] ./src/*.java
+  b) java -cp ./src Main
   b) java -cp [junit jar filepath];[hamcrest jar filepath];./src;. org.junit.runner.JUnitCore MyTimetableTest
   c) java -cp [junit jar filepath];[hamcrest jar filepath];./src;. org.junit.runner.JUnitCore ToolboxTest
 
